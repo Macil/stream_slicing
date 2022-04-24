@@ -27,8 +27,8 @@ export abstract class PartialReader {
   }
 
   /**
-   * Cancel the ReadableStream reader. This will cause any in-progress or future reads to think that
-   * the end of the stream has been reached.
+   * Cancel the ReadableStream reader. This may cause any in-progress or future reads
+   * to throw an error or think that the end of the stream has been reached.
    */
   abstract cancel(reason?: unknown): Promise<void>;
 
@@ -217,7 +217,10 @@ export class BYOBPartialReader extends PartialReader {
       // https://github.com/whatwg/streams/pull/1145
       const result = await this.#reader.read(view);
       if (result.done) {
-        return new Uint8Array(view.buffer, 0, bytesRead);
+        if (!result.value) {
+          throw new Error("Stream was closed while reading");
+        }
+        return new Uint8Array(result.value.buffer, 0, bytesRead);
       }
       bytesRead += result.value.byteLength;
       view = new Uint8Array(result.value.buffer, bytesRead);

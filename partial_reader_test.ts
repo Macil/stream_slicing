@@ -1,4 +1,7 @@
-import { assertEquals } from "https://deno.land/std@0.135.0/testing/asserts.ts";
+import {
+  assertEquals,
+  assertRejects,
+} from "https://deno.land/std@0.135.0/testing/asserts.ts";
 import {
   BYOBPartialReader,
   DefaultPartialReader,
@@ -138,8 +141,18 @@ for (const [name, factory] of Object.entries(tests)) {
     const ps = factory(originalStream);
     const readPromise = ps.readAmount(30);
     await ps.cancel(new Error("Abort"));
-    const read = await readPromise;
-    assertEquals(read.length, 0);
+    if (ps instanceof BYOBPartialReader) {
+      await assertRejects(
+        async () => {
+          await readPromise;
+        },
+        Error,
+        "Stream was closed while reading",
+      );
+    } else {
+      const read = await readPromise;
+      assertEquals(read.length, 0);
+    }
   });
 }
 
