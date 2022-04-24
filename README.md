@@ -7,7 +7,7 @@ from streams.
 ## Examples
 
 ```ts
-import { PartialReader } from "https://deno.land/x/stream_slicing@v0.1.0/partial_reader.ts";
+import { PartialReader } from "https://deno.land/x/stream_slicing@v1.0.0/partial_reader.ts";
 
 const response = fetch("...");
 const stream = response.body!;
@@ -28,7 +28,7 @@ data from a stream.
 
 ### PartialReader
 
-[API Docs](https://doc.deno.land/https://deno.land/x/stream_slicing@v0.1.0/partial_reader.ts/~/PartialReader)
+[API Docs](https://doc.deno.land/https://deno.land/x/stream_slicing@v1.0.0/partial_reader.ts/~/PartialReader)
 
 The `PartialReader` class is exported from `partial_reader.ts`, and you
 instantiate it by calling `PartialReader.fromStream(stream: ReadableStream)`.
@@ -49,8 +49,8 @@ errors if PartialReader's stream ends early. You must use `streamAmount()` and
 `ExactBytesTransformStream` together if you want to accomplish this:
 
 ```ts
-import { ExactBytesTransformStream } from "https://deno.land/x/stream_slicing@v0.1.0/exact_bytes_transform_stream.ts";
-import { PartialReader } from "https://deno.land/x/stream_slicing@v0.1.0/partial_reader.ts";
+import { ExactBytesTransformStream } from "https://deno.land/x/stream_slicing@v1.0.0/exact_bytes_transform_stream.ts";
+import { PartialReader } from "https://deno.land/x/stream_slicing@v1.0.0/partial_reader.ts";
 
 const response = fetch("...");
 const stream = response.body!;
@@ -62,7 +62,7 @@ const nextMegabyteStream = partialReader
 
 ### ExactBytesTransformStream
 
-[API Docs](https://doc.deno.land/https://deno.land/x/stream_slicing@v0.1.0/exact_bytes_transform_stream.ts/~/ExactBytesTransformStream)
+[API Docs](https://doc.deno.land/https://deno.land/x/stream_slicing@v1.0.0/exact_bytes_transform_stream.ts/~/ExactBytesTransformStream)
 
 The `ExactBytesTransformStream` class is exported from
 `exact_bytes_transform_stream.ts`, and you instantiate it by calling
