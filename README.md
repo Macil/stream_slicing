@@ -28,7 +28,7 @@ data from a stream.
 
 ### PartialReader
 
-[API Docs](https://doc.deno.land/https://deno.land/x/stream_slicing/partial_reader.ts)
+[API Docs](https://doc.deno.land/https://deno.land/x/stream_slicing@v0.1.0/partial_reader.ts/~/PartialReader)
 
 The `PartialReader` class is exported from `partial_reader.ts`, and you
 instantiate it by calling `PartialReader.fromStream(stream: ReadableStream)`.
@@ -62,7 +62,7 @@ const nextMegabyteStream = partialReader
 
 ### ExactBytesTransformStream
 
-[API Docs](https://doc.deno.land/https://deno.land/x/stream_slicing/exact_bytes_transform_stream.ts)
+[API Docs](https://doc.deno.land/https://deno.land/x/stream_slicing@v0.1.0/exact_bytes_transform_stream.ts/~/ExactBytesTransformStream)
 
 The `ExactBytesTransformStream` class is exported from
 `exact_bytes_transform_stream.ts`, and you instantiate it by calling
