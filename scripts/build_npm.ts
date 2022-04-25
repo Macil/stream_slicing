@@ -35,8 +35,7 @@ await build({
     // package.json properties
     name: "stream-slicing",
     version: Deno.args[0],
-    description:
-      "Deno library containing utilities for working with web standard streams",
+    description: "Library for working with web standard streams",
     license: "MIT",
     sideEffects: false,
     repository: {

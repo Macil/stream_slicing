@@ -1,8 +1,12 @@
 # stream_slicing
 
-This is a Deno library containing utilities for working with web standard
-streams (ReadableStream). This library is useful for incrementally reading data
-from streams.
+This is a Deno and Node.js library containing some utilities for working with
+web standard streams (ReadableStream). This library is useful for incrementally
+reading data from streams.
+
+This library is available for Deno at https://deno.land/x/stream_slicing and is
+available for Node.js on npm as
+[stream-slicing](https://www.npmjs.com/package/stream-slicing).
 
 ## Examples
 
