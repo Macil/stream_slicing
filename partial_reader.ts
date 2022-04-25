@@ -266,9 +266,9 @@ export class BYOBPartialReader extends PartialReader {
         try {
           if (bytesLeft <= 0) {
             result.consumed = true;
-            deferred.resolve();
             controller.close();
             controller.byobRequest!.respond(0);
+            deferred.resolve();
             return;
           }
           const view = controller.byobRequest!.view!;
@@ -283,9 +283,9 @@ export class BYOBPartialReader extends PartialReader {
           const part = await this.#reader.read(dest);
           if (part.done) {
             result.consumed = true;
-            deferred.resolve();
             controller.close();
-            controller.byobRequest!.respond(0);
+            controller.byobRequest!.respondWithNewView(part.value!);
+            deferred.resolve();
           } else {
             bytesLeft -= part.value.byteLength;
             controller.byobRequest!.respondWithNewView(part.value);
