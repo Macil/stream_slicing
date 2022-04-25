@@ -114,15 +114,15 @@ export abstract class PartialReader {
           const part = await this.limitedRead(bytesLeft);
           if (part.done) {
             result.consumed = true;
-            deferred.resolve();
             controller.close();
+            deferred.resolve();
           } else {
             bytesLeft -= part.value.byteLength;
             controller.enqueue(part.value);
             if (bytesLeft <= 0) {
               result.consumed = true;
-              deferred.resolve();
               controller.close();
+              deferred.resolve();
             }
           }
         } catch (err) {
