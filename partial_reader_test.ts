@@ -186,7 +186,11 @@ function testByteStream(): ReadableStream<Uint8Array> {
         dest[i] = index + i + 1;
       }
       index += dest.length;
-      controller.byobRequest!.respondWithNewView(dest);
+
+      // Avoiding respondWithNewView() because it's broken in Node:
+      // https://github.com/nodejs/node/issues/42851
+      // controller.byobRequest!.respondWithNewView(dest);
+      controller.byobRequest!.respond(dest.byteLength);
     },
   });
 }

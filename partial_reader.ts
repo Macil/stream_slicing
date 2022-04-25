@@ -1,4 +1,8 @@
 import { DeferredPromise } from "https://deno.land/x/deferred_promise@v1.0.0/mod.ts";
+import type {
+  ReadableStreamBYOBReader,
+  ReadableStreamReadResult,
+} from "./_support.deno.ts";
 
 export interface StreamUpToAmountResult {
   stream: ReadableStream<Uint8Array>;
