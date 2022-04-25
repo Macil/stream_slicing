@@ -7,6 +7,7 @@ await emptyDir("./npm");
 
 await build({
   entryPoints: [
+    "./mod.ts",
     { name: "./partial_reader", path: "./partial_reader.ts" },
     {
       name: "./exact_bytes_transform_stream",
@@ -24,7 +25,12 @@ await build({
       version: "^1.0.0",
     },
   },
+
+  // There are too many inconsistencies with the ways Deno and @types/node
+  // define ReadableStreams so we just disable type-checking of the original
+  // sources. We still create valid typedefs for use in Node.
   typeCheck: false,
+
   package: {
     // package.json properties
     name: "stream-slicing",
