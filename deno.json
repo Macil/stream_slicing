@@ -1,6 +1,11 @@
 {
   "tasks": {
-    "test": "deno test --ignore=./npm"
+    "test": "deno test"
+  },
+  "test": {
+    "files": {
+      "exclude": ["./npm"]
+    }
   },
   "lint": {
     "files": {
