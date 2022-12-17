@@ -2,9 +2,9 @@
 // swapped out in the Node.js version of this library because Node.js's
 // Typescript types are a little different.
 
-type _ReadableStreamReadResult<T> = ReadableStreamDefaultReadResult<T>;
+type _ReadableStreamDefaultReadResult<T> = ReadableStreamDefaultReadResult<T>;
 type _ReadableStreamBYOBReader = ReadableStreamBYOBReader;
 export type {
   _ReadableStreamBYOBReader as ReadableStreamBYOBReader,
-  _ReadableStreamReadResult as ReadableStreamReadResult,
+  _ReadableStreamDefaultReadResult as ReadableStreamDefaultReadResult,
 };

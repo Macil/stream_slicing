@@ -1,7 +1,7 @@
 // npm publishing instructions:
 //  deno run -A scripts/build_npm.ts [VERSION]
 //  cd npm && npm publish
-import { build, emptyDir } from "https://deno.land/x/dnt@0.23.0/mod.ts";
+import { build, emptyDir } from "https://deno.land/x/dnt@0.32.0/mod.ts";
 
 await emptyDir("./npm");
 
@@ -17,6 +17,16 @@ await build({
   outDir: "./npm",
   shims: {
     deno: "dev",
+    custom: [{
+      package: {
+        name: "stream/web",
+      },
+      globalNames: [
+        "ReadableStream",
+        "TransformStream",
+        "ReadableStreamDefaultReader",
+      ],
+    }],
   },
   mappings: {
     "./_support.deno.ts": "./_support.node.ts",

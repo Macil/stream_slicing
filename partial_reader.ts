@@ -1,7 +1,7 @@
 import { DeferredPromise } from "https://deno.land/x/deferred_promise@v1.0.0/mod.ts";
 import type {
   ReadableStreamBYOBReader,
-  ReadableStreamReadResult,
+  ReadableStreamDefaultReadResult,
 } from "./_support.deno.ts";
 
 export interface StreamUpToAmountResult {
@@ -40,11 +40,11 @@ export abstract class PartialReader {
    * Equivalent to {@link ReadableStreamDefaultReader.read} except that a maximum size is provided,
    * and if the underlying read() result is greater than the maximum size, then the extra data
    * will be buffered for later.
-   * @returns A {@link ReadableStreamReadResult} of `maxSize` bytes or less.
+   * @returns A {@link ReadableStreamDefaultReadResult} of `maxSize` bytes or less.
    */
   abstract limitedRead(
     maxSize: number,
-  ): Promise<ReadableStreamReadResult<Uint8Array>>;
+  ): Promise<ReadableStreamDefaultReadResult<Uint8Array>>;
 
   /**
    * Reads and returns `size` bytes from the stream, or less if the stream ends.
@@ -171,7 +171,7 @@ export class DefaultPartialReader extends PartialReader {
 
   override async limitedRead(
     maxSize: number,
-  ): Promise<ReadableStreamReadResult<Uint8Array>> {
+  ): Promise<ReadableStreamDefaultReadResult<Uint8Array>> {
     let value: Uint8Array;
     if (this.#leftOvers) {
       value = this.#leftOvers;
@@ -234,9 +234,9 @@ export class BYOBPartialReader extends PartialReader {
 
   override limitedRead(
     maxSize: number,
-  ): Promise<ReadableStreamReadResult<Uint8Array>> {
+  ): Promise<ReadableStreamDefaultReadResult<Uint8Array>> {
     return this.#reader.read(new Uint8Array(maxSize)) as Promise<
-      ReadableStreamReadResult<Uint8Array>
+      ReadableStreamDefaultReadResult<Uint8Array>
     >;
   }
 

@@ -1,5 +1,3 @@
 export type ReadableStreamBYOBReader = unknown;
 
-export type {
-  ReadableStreamDefaultReadResult as ReadableStreamReadResult,
-} from "stream/web";
+export type { ReadableStreamDefaultReadResult } from "stream/web";
