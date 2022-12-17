@@ -235,7 +235,9 @@ export class BYOBPartialReader extends PartialReader {
   override limitedRead(
     maxSize: number,
   ): Promise<ReadableStreamReadResult<Uint8Array>> {
-    return this.#reader.read(new Uint8Array(maxSize));
+    return this.#reader.read(new Uint8Array(maxSize)) as Promise<
+      ReadableStreamReadResult<Uint8Array>
+    >;
   }
 
   override async skipAmount(size: number): Promise<void> {
