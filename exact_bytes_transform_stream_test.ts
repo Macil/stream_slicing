@@ -1,8 +1,8 @@
+import { Buffer } from "https://deno.land/std@0.168.0/streams/buffer.ts";
 import {
   assertEquals,
   assertRejects,
-} from "https://deno.land/std@0.135.0/testing/asserts.ts";
-import { Buffer } from "https://deno.land/std@0.135.0/streams/buffer.ts";
+} from "https://deno.land/std@0.168.0/testing/asserts.ts";
 import { ExactBytesTransformStream } from "./exact_bytes_transform_stream.ts";
 
 Deno.test("works", {
