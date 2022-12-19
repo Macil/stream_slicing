@@ -1,7 +1,7 @@
 // npm publishing instructions:
 //  deno run -A scripts/build_npm.ts [VERSION]
 //  cd npm && npm publish
-import { build, emptyDir } from "https://deno.land/x/dnt@0.32.0/mod.ts";
+import { build, emptyDir } from "https://deno.land/x/dnt@0.32.1/mod.ts";
 
 await emptyDir("./npm");
 
