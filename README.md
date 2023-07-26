@@ -30,6 +30,19 @@ data from a stream.
 
 ## API
 
+### partialReaderFromDenoFsFile
+
+[API Docs](https://doc.deno.land/https://deno.land/x/stream_slicing/deno_helpers.ts/~/partialReaderFromDenoFsFile)
+
+Helper function for creating a PartialReader from a Deno.FsFile with seeking
+support configured.
+
+```ts
+import { partialReaderFromDenoFsFile } from "https://deno.land/x/stream_slicing/deno_helpers.ts";
+
+const partialReader = partialReaderFromDenoFsFile(await Deno.open("foo.zip"));
+```
+
 ### PartialReader
 
 [API Docs](https://doc.deno.land/https://deno.land/x/stream_slicing/partial_reader.ts/~/PartialReader)
@@ -47,7 +60,7 @@ The class contains the following methods:
   stream. Throws an error if the stream ends while reading.
 - **skipAmount(size: number)** Skips over `size` bytes from the stream. If you
   are working with a local file, make sure to use
-  `PartialReader.fromDenoFsFile()` or provide the `seek` option to
+  `partialReaderFromDenoFsFile()` or provide the `seek` option to
   `PartialReader.fromStream()` so that efficient seeking can be done, otherwise
   seeking will be done by reading and then ignoring data.
 - **streamAmount(size: number)** Returns an object with a `stream` property
@@ -62,9 +75,9 @@ errors if PartialReader's stream ends early. You must use `streamAmount()` and
 import { ExactBytesTransformStream } from "https://deno.land/x/stream_slicing/exact_bytes_transform_stream.ts";
 import { PartialReader } from "https://deno.land/x/stream_slicing/partial_reader.ts";
 
-const response = fetch("...");
-const stream = response.body!;
-const partialReader = PartialReader.fromStream(stream);
+const response = await fetch("...");
+if (!response.ok) throw new Error("Bad response: " + response.status);
+const partialReader = PartialReader.fromStream(response.body!);
 const nextMegabyteStream = partialReader
   .streamAmount(1024 * 1024).stream
   .pipeThrough(new ExactBytesTransformStream(1024 * 1024));
