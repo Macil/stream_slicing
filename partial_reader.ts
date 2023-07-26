@@ -10,6 +10,10 @@ export interface StreamUpToAmountResult {
   onConsumed: Promise<void>;
 }
 
+export interface PartialReaderOptions {
+  seek?: (amount: number) => Promise<unknown>;
+}
+
 // TODO consider throwing if overlapping reads happen.
 export abstract class PartialReader {
   /**
@@ -18,12 +22,15 @@ export abstract class PartialReader {
    * supports byob mode ("bring your own buffer") readers, which are more efficient for some
    * use-cases.
    */
-  static fromStream(stream: ReadableStream<Uint8Array>): PartialReader {
+  static fromStream(
+    stream: ReadableStream<Uint8Array>,
+    options: PartialReaderOptions = {},
+  ): PartialReader {
     try {
-      return new BYOBPartialReader(stream.getReader({ mode: "byob" }));
+      return new BYOBPartialReader(stream.getReader({ mode: "byob" }), options);
     } catch (err: unknown) {
       if (err instanceof TypeError) {
-        return new DefaultPartialReader(stream.getReader());
+        return new DefaultPartialReader(stream.getReader(), options);
       } else {
         throw err;
       }
@@ -86,8 +93,15 @@ export abstract class PartialReader {
     return data;
   }
 
-  /** Skips `size` bytes of the stream by reading them and ignoring the result. */
+  /**
+   * Skips `size` bytes of the stream.
+   * Uses {@link PartialReaderOptions.seek} to seek the stream if available, otherwise
+   * does it by reading bytes from the stream and ignoring the result.
+   */
   async skipAmount(size: number): Promise<void> {
+    // We don't use this.#options.seek here because the abstract class can't know
+    // whether there are leftover bytes from a previous read. It's up to the subclass
+    // to use seek.
     let bytesLeft = size;
     while (bytesLeft > 0) {
       const part = await this.limitedRead(bytesLeft);
@@ -151,6 +165,7 @@ export abstract class PartialReader {
 
 export class DefaultPartialReader extends PartialReader {
   readonly #reader: ReadableStreamDefaultReader<Uint8Array>;
+  readonly #options: PartialReaderOptions;
   #leftOvers: Uint8Array | undefined;
 
   /**
@@ -160,9 +175,11 @@ export class DefaultPartialReader extends PartialReader {
    */
   constructor(
     reader: ReadableStreamDefaultReader<Uint8Array>,
+    options: PartialReaderOptions = {},
   ) {
     super();
     this.#reader = reader;
+    this.#options = options;
   }
 
   override cancel(reason?: unknown): Promise<void> {
@@ -192,10 +209,22 @@ export class DefaultPartialReader extends PartialReader {
       value,
     };
   }
+
+  skipAmount(size: number): Promise<void> {
+    if (this.#options.seek) {
+      const amountToSeek = size - (this.#leftOvers?.length ?? 0);
+      if (amountToSeek > 0) {
+        this.#leftOvers = undefined;
+        return this.#options.seek(amountToSeek).then(() => {});
+      }
+    }
+    return super.skipAmount(size);
+  }
 }
 
 export class BYOBPartialReader extends PartialReader {
   readonly #reader: ReadableStreamBYOBReader;
+  readonly #options: PartialReaderOptions;
 
   /**
    * Manually constructs a BYOBPartialReader from a byob mode reader.
@@ -204,9 +233,11 @@ export class BYOBPartialReader extends PartialReader {
    */
   constructor(
     reader: ReadableStreamBYOBReader,
+    options: PartialReaderOptions = {},
   ) {
     super();
     this.#reader = reader;
+    this.#options = options;
   }
 
   override cancel(reason?: unknown): Promise<void> {
@@ -241,6 +272,12 @@ export class BYOBPartialReader extends PartialReader {
   }
 
   override async skipAmount(size: number): Promise<void> {
+    if (size === 0) {
+      return;
+    }
+    if (this.#options.seek) {
+      return this.#options.seek(size).then(() => {});
+    }
     let bytesLeft = size;
     let trashBuffer = new Uint8Array(Math.min(bytesLeft, 2048));
     while (bytesLeft > 0) {
