@@ -35,7 +35,8 @@ data from a stream.
 [API Docs](https://doc.deno.land/https://deno.land/x/stream_slicing/partial_reader.ts/~/PartialReader)
 
 The `PartialReader` class is exported from `partial_reader.ts`, and you
-instantiate it by calling `PartialReader.fromStream(stream: ReadableStream)`.
+instantiate it by calling `PartialReader.fromDenoFsFile(file: Deno.FsFile)` or
+`PartialReader.fromStream(stream: ReadableStream, options?: PartialReaderOptions)`.
 The class contains the following methods:
 
 - **limitedRead(maxSize: number)** Like calling read() on a reader of the
@@ -44,6 +45,11 @@ The class contains the following methods:
   or fewer if the stream ends while reading.
 - **readAmountStrict(size: number)** Reads and returns `size` bytes from the
   stream. Throws an error if the stream ends while reading.
+- **skipAmount(size: number)** Skips over `size` bytes from the stream. If you
+  are working with a local file, make sure to use
+  `PartialReader.fromDenoFsFile()` or provide the `seek` option to
+  `PartialReader.fromStream()` so that efficient seeking can be done, otherwise
+  seeking will be done by reading and then ignoring data.
 - **streamAmount(size: number)** Returns an object with a `stream` property
   containing a ReadableStream that forwards the next `size` bytes from the
   PartialReader's stream.

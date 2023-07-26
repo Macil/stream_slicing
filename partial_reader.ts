@@ -14,13 +14,39 @@ export interface PartialReaderOptions {
   seek?: (amount: number) => Promise<unknown>;
 }
 
+function constructorArgsFromDenoFsFile(
+  file: Deno.FsFile,
+): [ReadableStream<Uint8Array>, PartialReaderOptions] {
+  const stream = file.readable;
+  const options: PartialReaderOptions = {
+    seek: (amount) => file.seek(amount, Deno.SeekMode.Current),
+  };
+  return [stream, options];
+}
+
 // TODO consider throwing if overlapping reads happen.
 export abstract class PartialReader {
   /**
-   * Construct a PartialReader from a ReadableStream.
+   * Construct a PartialReader from a {@link Deno.FsFile}.
+   * This enables efficient seeking.
+   *
    * Internally this will return a subclass of PartialReader based on whether the `stream`
    * supports byob mode ("bring your own buffer") readers, which are more efficient for some
    * use-cases.
+   */
+  static fromDenoFsFile(file: Deno.FsFile): PartialReader {
+    return PartialReader.fromStream(...constructorArgsFromDenoFsFile(file));
+  }
+
+  /**
+   * Construct a PartialReader from a ReadableStream.
+   *
+   * Internally this will return a subclass of PartialReader based on whether the `stream`
+   * supports byob mode ("bring your own buffer") readers, which are more efficient for some
+   * use-cases.
+   *
+   * If the stream is seekable, then pass a callback to {@link PartialReaderOptions.seek}
+   * to enable efficient seeking.
    */
   static fromStream(
     stream: ReadableStream<Uint8Array>,
@@ -182,6 +208,15 @@ export class DefaultPartialReader extends PartialReader {
     this.#options = options;
   }
 
+  /**
+   * Construct a DefaultPartialReader from a {@link Deno.FsFile}.
+   * This enables efficient seeking.
+   */
+  static fromDenoFsFile(file: Deno.FsFile): DefaultPartialReader {
+    const [stream, options] = constructorArgsFromDenoFsFile(file);
+    return new DefaultPartialReader(stream.getReader(), options);
+  }
+
   override cancel(reason?: unknown): Promise<void> {
     return this.#reader.cancel(reason);
   }
@@ -238,6 +273,15 @@ export class BYOBPartialReader extends PartialReader {
     super();
     this.#reader = reader;
     this.#options = options;
+  }
+
+  /**
+   * Construct a BYOBPartialReader from a {@link Deno.FsFile}.
+   * This enables efficient seeking.
+   */
+  static fromDenoFsFile(file: Deno.FsFile): BYOBPartialReader {
+    const [stream, options] = constructorArgsFromDenoFsFile(file);
+    return new BYOBPartialReader(stream.getReader({ mode: "byob" }), options);
   }
 
   override cancel(reason?: unknown): Promise<void> {
