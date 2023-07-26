@@ -1,8 +1,8 @@
-import { Buffer } from "https://deno.land/std@0.168.0/streams/buffer.ts";
 import {
   assertEquals,
   assertRejects,
-} from "https://deno.land/std@0.168.0/testing/asserts.ts";
+} from "https://deno.land/std@0.195.0/assert/mod.ts";
+import { Buffer } from "https://deno.land/std@0.195.0/streams/buffer.ts";
 import { ExactBytesTransformStream } from "./exact_bytes_transform_stream.ts";
 
 Deno.test("works", {
@@ -13,7 +13,7 @@ Deno.test("works", {
     buf.writable,
   );
   assertEquals(
-    buf.bytes(),
+    buf.bytes({ copy: false }),
     new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9]),
   );
 });

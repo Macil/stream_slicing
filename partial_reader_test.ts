@@ -1,7 +1,7 @@
 import {
   assertEquals,
   assertRejects,
-} from "https://deno.land/std@0.168.0/testing/asserts.ts";
+} from "https://deno.land/std@0.195.0/assert/mod.ts";
 import {
   BYOBPartialReader,
   DefaultPartialReader,
